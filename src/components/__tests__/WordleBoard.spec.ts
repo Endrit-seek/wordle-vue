@@ -36,13 +36,16 @@ describe("WordleBoard", () => {
   });
 
   describe("Rules for defining the word of the day", () => {
-    test("if a word of the day provided does not have a exactly 5 characters, a warning is emitted", async () => {
-      console.warn = vi.fn();
+    test.each(["FLY", "tests", "QWERT"])(
+      "If %s is provided, a warning is emitted",
+      (wordOfTheDay: string) => {
+        console.warn = vi.fn();
 
-      mount(WordleBoard, { props: { wordOfTheDay: "FLY" } });
+        mount(WordleBoard, { props: { wordOfTheDay: wordOfTheDay } });
 
-      expect(console.warn).toHaveBeenCalled();
-    });
+        expect(console.warn).toHaveBeenCalled();
+      }
+    );
 
     test("if the word of the day is not all in uppercase, a warning is emitted", async () => {
       console.warn = vi.fn();
