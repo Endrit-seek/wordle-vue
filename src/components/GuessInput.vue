@@ -29,6 +29,8 @@ function onSubmit() {
   }
 
   emit("guess-submitted", formattedGuessInProgress.value);
+
+  guessInProgress.value = null;
 }
 
 function onInput(event: Event) {
