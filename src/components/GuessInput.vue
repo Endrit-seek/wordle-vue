@@ -1,0 +1,52 @@
+<script setup lang="ts">
+import { WORD_SIZE } from "@/settings";
+import englishWords from "@/englishWordsWith5Letters.json";
+import { ref, computed } from "vue";
+
+const emit = defineEmits<{
+  "guess-submitted": [guess: string];
+}>();
+
+const guessInProgress = ref<string | null>(null);
+
+const formattedGuessInProgress = computed<string>({
+  get() {
+    return guessInProgress.value ?? "";
+  },
+  set(rawValue: string) {
+    guessInProgress.value = null;
+
+    guessInProgress.value = rawValue
+      .slice(0, WORD_SIZE)
+      .toUpperCase()
+      .replace(/[^A-Z]+/gi, "");
+  },
+});
+
+function onSubmit() {
+  if (!englishWords.includes(formattedGuessInProgress.value)) {
+    return;
+  }
+
+  emit("guess-submitted", formattedGuessInProgress.value);
+}
+
+function onInput(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const newValue = input.value.replace(/[^A-Za-z]/g, "");
+  if (newValue !== input.value) {
+    input.value = newValue;
+    formattedGuessInProgress.value = newValue;
+  }
+}
+</script>
+
+<template>
+  <input
+    v-model="formattedGuessInProgress"
+    :maxlength="WORD_SIZE"
+    type="text"
+    @keydown.enter="onSubmit"
+    @input="onInput"
+  />
+</template>
