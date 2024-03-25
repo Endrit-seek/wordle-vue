@@ -10,14 +10,16 @@ defineProps({
   },
 });
 
-const guessInProgress = ref("");
+const guessInProgress = ref<string | null>(null);
 const guessSubmited = ref("");
 
-const formattedGuessInProgress = computed({
+const formattedGuessInProgress = computed<string>({
   get() {
-    return guessInProgress.value;
+    return guessInProgress.value ?? "";
   },
   set(rawValue: string) {
+    guessInProgress.value = null;
+
     guessInProgress.value = rawValue
       .slice(0, WORD_SIZE)
       .toUpperCase()
@@ -26,11 +28,22 @@ const formattedGuessInProgress = computed({
 });
 
 function onSubmit() {
-  if (!englishWords.includes(guessInProgress.value)) {
+  if (!englishWords.includes(formattedGuessInProgress.value)) {
     return;
   }
 
-  guessSubmited.value = guessInProgress.value;
+  guessSubmited.value = formattedGuessInProgress.value;
+}
+
+
+// Event listener to prevent non-letter characters from being entered
+function onInput(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const newValue = input.value.replace(/[^A-Za-z]/g, '');
+  if (newValue !== input.value) {
+    input.value = newValue;
+    formattedGuessInProgress.value = newValue;
+  }
 }
 </script>
 
@@ -40,6 +53,7 @@ function onSubmit() {
     :maxlength="WORD_SIZE"
     type="text"
     @keydown.enter="onSubmit"
+    @input="onInput"
   />
   <p
     v-if="guessSubmited.length > 0"
