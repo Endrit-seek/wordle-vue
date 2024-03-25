@@ -18,7 +18,7 @@ const formattedGuessInProgress = computed({
     return guessInProgress.value;
   },
   set(rawValue: string) {
-    guessInProgress.value = rawValue.slice(0, WORD_SIZE);
+    guessInProgress.value = rawValue.slice(0, WORD_SIZE).toUpperCase();
   },
 });
 
@@ -26,6 +26,7 @@ function onSubmit() {
   if (!englishWords.includes(guessInProgress.value)) {
     return;
   }
+
   guessSubmited.value = guessInProgress.value;
 }
 </script>
